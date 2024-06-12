@@ -220,7 +220,6 @@ function gameLoop(currentTime) {
   }
   const collideWithItem = itemController.collideWith(player);
   if (collideWithItem && collideWithItem.itemId) {
-    console.log(collideWithItem.itemId);
     score.getItem(collideWithItem.itemId);
   }
 

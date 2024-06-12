@@ -7,6 +7,7 @@ class Score {
   HIGH_SCORE_KEY = 'highScore';
   stage = stageJson.data;
   itemJson = item_json.data;
+  totalScore = 0;
   currentStageIndex = 0;
   scorePerSecond = this.stage[this.currentStageIndex].scorePerSecond;
 
@@ -26,19 +27,25 @@ class Score {
       sendEvent(11, {
         currentStage: this.stage[this.currentStageIndex - 1].id,
         targetStage: this.stage[this.currentStageIndex].id,
-        targetPerSecond : this.stage[this.currentStageIndex].scorePerSecond
+        targetPerSecond: this.stage[this.currentStageIndex].scorePerSecond
       });
     }
   }
 
   getItem(itemId) {
-    this.score += 0;
+    this.score += this.itemJson[itemId - 1].score;
+    this.totalScore += this.itemJson[itemId - 1].score;
+    sendEvent(12, {
+      addScore: this.itemJson[itemId - 1].score,
+      totalScore: this.totalScore
+    });
   }
 
   reset() {
     this.score = 0;
     this.currentStageIndex = 0;
     this.scorePerSecond = 0;
+    this.totalScore = 0;
   }
 
   setHighScore() {
