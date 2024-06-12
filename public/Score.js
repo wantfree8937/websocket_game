@@ -1,7 +1,14 @@
+import { sendEvent } from './Socket.js';
+import stageJson from './assets/stage.json' with {type: "json"};
+import item_json from './assets/item.json' with { type: 'json' };
+
 class Score {
   score = 0;
   HIGH_SCORE_KEY = 'highScore';
-  stageChange = true;
+  stage = stageJson.data;
+  itemJson = item_json.data;
+  currentStageIndex = 0;
+  scorePerSecond = this.stage[this.currentStageIndex].scorePerSecond;
 
   constructor(ctx, scaleRatio) {
     this.ctx = ctx;
@@ -10,11 +17,17 @@ class Score {
   }
 
   update(deltaTime) {
-    this.score += deltaTime * 0.001;
-    // 점수가 100점 이상이 될 시 서버에 메세지 전송
-    if (Math.floor(this.score) === 100 && this.stageChange) {
-      this.stageChange = false;
-      sendEvent(11, { currentStage: 1000, targetStage: 1001 });
+    this.scorePerSecond = this.stage[this.currentStageIndex].scorePerSecond;
+    this.score += deltaTime * 0.001 * this.scorePerSecond;
+    
+    if (this.score >= this.stage[this.currentStageIndex + 1].score) {
+      this.currentStageIndex++;
+      this.scorePerSecond = this.stage[this.currentStageIndex].scorePerSecond;
+      sendEvent(11, {
+        currentStage: this.stage[this.currentStageIndex - 1].id,
+        targetStage: this.stage[this.currentStageIndex].id,
+        targetPerSecond : this.stage[this.currentStageIndex].scorePerSecond
+      });
     }
   }
 
@@ -24,6 +37,8 @@ class Score {
 
   reset() {
     this.score = 0;
+    this.currentStageIndex = 0;
+    this.scorePerSecond = 0;
   }
 
   setHighScore() {
@@ -37,6 +52,10 @@ class Score {
     return this.score;
   }
 
+  getStageId() {
+    return this.stage[this.currentStageIndex].id;
+  }
+
   draw() {
     const highScore = Number(localStorage.getItem(this.HIGH_SCORE_KEY));
     const y = 20 * this.scaleRatio;
@@ -47,11 +66,14 @@ class Score {
 
     const scoreX = this.canvas.width - 75 * this.scaleRatio;
     const highScoreX = scoreX - 125 * this.scaleRatio;
-
+    const stageX = highScoreX - 250 * this.scaleRatio;
+    
     const scorePadded = Math.floor(this.score).toString().padStart(6, 0);
     const highScorePadded = highScore.toString().padStart(6, 0);
+    const stagePadded = (this.stage[this.currentStageIndex].id % 1000);
 
-    this.ctx.fillText(scorePadded, scoreX, y);
+    this.ctx.fillText(`stage: ${stagePadded}`, stageX, y);
+    this.ctx.fillText(scorePadded, scoreX, y); 
     this.ctx.fillText(`HI ${highScorePadded}`, highScoreX, y);
   }
 }

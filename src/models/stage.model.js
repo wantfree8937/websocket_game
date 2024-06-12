@@ -12,8 +12,8 @@ export const getStage = (uuid) => {
 
 // 기존에 stageId 만 저장하던 것에서
 // stageId와 timestamp 2가지를 같이 저장
-export const setStage = (uuid, id, timestamp) => {
-  return stages[uuid].push({ id, timestamp });
+export const setStage = (uuid, id, scorePerSecond, timestamp) => {
+  return stages[uuid].push({ id, scorePerSecond, timestamp });
 };
 
 export const clearStage = (uuid) => {
