@@ -7,7 +7,7 @@ export const gameStart = (uuid, payload) => {
   clearStage(uuid);
   clearScore(uuid);
   setStage(uuid, stages.data[0].id, stages.data[0].scorePerSecond, payload.timestamp);
-  setScore(uuid, 0, 0, payload.timestamp);
+  setScore(uuid, null, 0, 0, payload.timestamp);
   console.log('Stage:', getStage(uuid));
 
   return { status: 'success' };

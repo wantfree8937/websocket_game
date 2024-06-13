@@ -10,25 +10,29 @@ export const moveStageHandler = (userId, payload) => {
     return { status: 'fail', message: 'No stages found for user' };
   }
   console.log(currentStages);
-  
+
   // 오름차순 정렬 후 가장 큰 스테이지 ID 확인 = 가장 상위의 스테이지 = 현재 스테이지
   currentStages.sort((a, b) => a.id - b.id);
   const currentStage = currentStages[currentStages.length - 1];
 
   totalScores.sort((a, b) => a.totalScore - b.totalScore);
   const totalScoreMax = totalScores[totalScores.length - 1];
-  console.log(totalScoreMax.totalScore);
+  console.log(totalScoreMax);
   // payload 의 currentStage 와 비교
   if (currentStage.id !== payload.currentStage) {
     return { status: 'fail', message: 'Current stage mismatch' };
   }
-  
+
   // 점수 검증
   const serverTime = Date.now();
-  const elapsedTime = ((serverTime - currentStage.timestamp) * currentStage.scorePerSecond / 1000) + totalScoreMax.totalScore; // 초 단위로 계산
-  console.log(elapsedTime);
+  
+  const elapsedTime =
+    ((serverTime - currentStage.timestamp) * currentStage.scorePerSecond) / 1000 +
+    totalScoreMax.elapseScore -
+    totalScoreMax.diffScore; // 초 단위로 계산
+  
   // 오차범위 설정
-  if (!((elapsedTime % 100) >= 95 || (elapsedTime % 100) <= 5)) {
+  if (!(elapsedTime % 100 >= 95 || elapsedTime % 100 <= 5)) {
     return { status: 'fail', message: 'Invalid elapsed time' };
   }
 
@@ -37,7 +41,7 @@ export const moveStageHandler = (userId, payload) => {
   if (!stages.data.some((stage) => stage.id === payload.targetStage)) {
     return { status: 'fail', message: 'Target stage does not exist' };
   }
-  
+
   // 유저의 다음 스테이지 정보 업데이트 + 현재 시간
   setStage(userId, payload.targetStage, payload.targetPerSecond, serverTime);
   return { status: 'success' };

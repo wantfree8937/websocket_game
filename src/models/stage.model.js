@@ -19,3 +19,4 @@ export const setStage = (uuid, id, scorePerSecond, timestamp) => {
 export const clearStage = (uuid) => {
   return (stages[uuid] = []);
 };
+

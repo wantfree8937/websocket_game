@@ -33,11 +33,11 @@ class ItemController {
 
   createItem() {
     const currentStageId = this.stage.getStageId();
-    if(currentStageId > this.itemUnlock[this.currentUnlockIndex].stage_id){
-        this.currentUnlockIndex++;
-        this.currentItemIndex++;
+    if (currentStageId > this.itemUnlock[this.currentUnlockIndex].stage_id) {
+      this.currentUnlockIndex++;
+      this.currentItemIndex++;
     }
-    
+
     const index = this.getRandomNumber(0, this.currentItemIndex);
     const itemInfo = this.itemImages[index];
     const x = this.canvas.width * 1.5;
