@@ -54,7 +54,6 @@ class ItemController {
     );
 
     this.items.push(item);
-    console.log(this.items);
   }
 
   update(gameSpeed, deltaTime) {
@@ -88,6 +87,8 @@ class ItemController {
 
   reset() {
     this.items = [];
+    this.scurrentItemIndex = 0;
+    this.currentUnlockIndex = 0;
   }
 }
 

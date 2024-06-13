@@ -1,10 +1,13 @@
 import { getGameAssets } from "../init/assets.js";
 import { clearStage, getStage, setStage } from "../models/stage.model.js";
+import { clearScore, setScore } from "../models/score.model.js";
 
 export const gameStart = (uuid, payload) => {
   const { stages } = getGameAssets();
   clearStage(uuid);
+  clearScore(uuid);
   setStage(uuid, stages.data[0].id, stages.data[0].scorePerSecond, payload.timestamp);
+  setScore(uuid, 0, 0, payload.timestamp);
   console.log('Stage:', getStage(uuid));
 
   return { status: 'success' };
@@ -14,7 +17,7 @@ export const gameEnd = (uuid, payload) => {
   // 클라이언트에서 받은 게임 종료 시 타임스탬프와 총 점수
   const { timestamp: gameEndTime, score } = payload;
   const stages = getStage(uuid);
-
+  
   if (!stages.length) {
     return { status: 'fail', message: 'No stages found for user' };
   }
@@ -45,3 +48,4 @@ export const gameEnd = (uuid, payload) => {
   // 검증이 통과되면 게임 종료 처리
   return { status: 'success', message: 'Game ended successfully', score };
 };
+

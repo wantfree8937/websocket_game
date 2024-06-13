@@ -56,6 +56,7 @@ let scaleRatio = null;
 let previousTime = null;
 let gameSpeed = GAME_SPEED_START;
 let gameover = false;
+let gameClear = false; // 게임 클리어 상태 추가
 let hasAddedEventListenersForRestart = false;
 let waitingToStart = true;
 
@@ -144,6 +145,26 @@ function showGameOver() {
   ctx.fillText('GAME OVER', x, y);
 }
 
+function showGameClear() {
+  const fontSize = 70 * scaleRatio;
+  ctx.font = `${fontSize}px Verdana`;
+  ctx.fillStyle = 'grey';
+  const x = canvas.width / 6.2;
+  const y = canvas.height / 1.5;
+  ctx.fillText('GAME      CLEAR', x, y);
+
+  const img = new Image();
+  img.src = 'images/happy_rtan.gif';
+  img.onload = () => {
+    console.log('Image loaded successfully');
+    const imgWidth = img.width * scaleRatio / 3;
+    const imgHeight = img.height * scaleRatio / 3;
+    const imgX = (canvas.width - imgWidth) / 2;
+    const imgY = -30;
+    ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+  };
+}
+
 function showStartGameText() {
   const fontSize = 40 * scaleRatio;
   ctx.font = `${fontSize}px Verdana`;
@@ -160,6 +181,7 @@ function updateGameSpeed(deltaTime) {
 function reset() {
   hasAddedEventListenersForRestart = false;
   gameover = false;
+  gameClear = false;
   waitingToStart = false;
 
   ground.reset();
@@ -199,7 +221,7 @@ function gameLoop(currentTime) {
 
   clearScreen();
 
-  if (!gameover && !waitingToStart) {
+  if (!gameover && !waitingToStart && !gameClear) {
     // update
     // 땅이 움직임
     ground.update(gameSpeed, deltaTime);
@@ -211,17 +233,30 @@ function gameLoop(currentTime) {
     updateGameSpeed(deltaTime);
 
     score.update(deltaTime);
+
+    // 게임 클리어 확인
+    if (score.isGameClear()) {
+      gameClear = true;
+      score.setHighScore();
+      showGameClear();
+    }
   }
 
-  if (!gameover && cactiController.collideWith(player)) {
+  if (!gameover && !gameClear && cactiController.collideWith(player)) {
     gameover = true;
     score.setHighScore();
     setupGameReset();
   }
+
   const collideWithItem = itemController.collideWith(player);
   if (collideWithItem && collideWithItem.itemId) {
-    console.log(collideWithItem.itemId);
     score.getItem(collideWithItem.itemId);
+    // 아이템 획득 후 게임 클리어 확인
+    if (score.isGameClear()) {
+      gameClear = true;
+      score.setHighScore();
+      showGameClear();
+    }
   }
 
   // draw
@@ -230,6 +265,11 @@ function gameLoop(currentTime) {
   ground.draw();
   score.draw();
   itemController.draw();
+
+  if (gameClear) {
+    showGameClear();
+    return;
+  }
 
   if (gameover) {
     showGameOver();
