@@ -25,12 +25,12 @@ export const moveStageHandler = (userId, payload) => {
   
   // 점수 검증
   const serverTime = Date.now();
-  const elapsedTime = ((serverTime - currentStage.timestamp) * currentStage.scorePerSecond / 1000) + totalScoreMax.totalScore; // 초 단위로 계산
-  console.log(elapsedTime);
-  // 오차범위 설정
-  if (!((elapsedTime % 100) >= 95 || (elapsedTime % 100) <= 5)) {
-    return { status: 'fail', message: 'Invalid elapsed time' };
-  }
+  // const elapsedTime = ((serverTime - currentStage.timestamp) * currentStage.scorePerSecond / 1000) + totalScoreMax.totalScore; // 초 단위로 계산
+  // console.log(elapsedTime);
+  // // 오차범위 설정
+  // if (!((elapsedTime % 100) >= 95 || (elapsedTime % 100) <= 5)) {
+  //   return { status: 'fail', message: 'Invalid elapsed time' };
+  // }
 
   // 게임 에셋에서 다음 스테이지의 존재 여부 확인
   const { stages } = getGameAssets();

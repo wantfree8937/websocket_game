@@ -4,5 +4,5 @@ export const addScoreHandler = (userId, payload) => {
   const serverTime = Date.now();
   setScore(userId, payload.addScore, payload.totalScore, serverTime);
   
-  return { status: 'success' };
+  return { status: 'get item' };
 };
