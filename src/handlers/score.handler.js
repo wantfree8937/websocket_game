@@ -16,5 +16,5 @@ export const addScoreHandler = (userId, payload) => {
   }
 
   setScore(userId, payload.addScore, payload.totalScore, serverTime);
-  return { status: 'get item' };
+  return { status: 'success', message: 'get item'};
 };
